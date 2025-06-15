@@ -1,0 +1,160 @@
+
+
+
+<div class="flex flex-col sm-tablet:flex-row gap-6 h-full">
+  <div class="flex-1 md:max-w-80 p-4 rounded-lg bg-lightBlue flex flex-col h-full">
+
+    <h4 class="block text-lightBlack text-base font-bold sm-mobile:text-xl pb-6 last:pb-0">
+        <span class="line-clamp-2">{{heading_login}}</span>
+    </h4>
+
+    <div class="alert-target"></div>
+
+    <div class="flex gap-4 pt-3 flex-wrap *:max-w-full">
+      <div class="flex h-max items-center ps-4 border border-gray-200 rounded-lg w-full flex-auto has-[:checked]:border-darkGreen has-[:checked]:focus:ring-darkGreen">
+        <input id="register-radio-1" type="radio"
+          name="account"
+          value="register"
+          {% if account == 'register' %} checked="checked" {% endif %}
+          class="w-4 h-4 text-lightGreen bg-lightBlue border-lightGreen focus:ring-darkGreen">
+        <label for="register-radio-1" class="w-full p-4 pl-0 ms-2 text-sm font-medium text-lightBlack">{{ text_register }}</label>
+      </div>
+      {% if checkout_guest %}
+        <div class="flex h-max items-center ps-4 border border-gray-200 rounded-lg w-full flex-auto has-[:checked]:border-darkGreen has-[:checked]:focus:ring-darkGreen">
+          <input id="guest-radio-2" type="radio"
+            name="account"
+            value="guest"
+            {% if account == 'guest' %} checked="checked" {% endif %}
+            class="w-4 h-4 text-lightGreen bg-lightBlue border-lightGreen focus:ring-darkGreen">
+          <label for="guest-radio-2" class="w-full p-4 pl-0 ms-2 text-sm font-medium text-lightBlack">{{ text_guest }}</label>
+        </div>
+      {% endif %}
+      <div class="flex h-max items-center ps-4 border border-gray-200 rounded-lg w-full flex-auto has-[:checked]:border-darkGreen has-[:checked]:focus:ring-darkGreen">
+        <input id="auth-radio-1" type="radio"
+          name="account"
+          value="auth"
+          {% if account == 'auth' %} checked="checked" {% endif %}
+          class="w-4 h-4 text-lightGreen bg-lightBlue border-lightGreen focus:ring-darkGreen">
+        <label for="auth-radio-1" class="w-full p-4 pl-0 ms-2 text-sm font-medium text-lightBlack">{{ text_auth }}</label>
+      </div>
+    </div>
+  </div>
+
+  <form id="auth-form" class="w-full flex-1 p-4 rounded-lg bg-lightBlue flex flex-col h-max">
+    <div class="flex flex-col h-max max-w-xl w-full mx-auto">
+    
+      <h4 class="block text-lightBlack text-base font-bold sm-mobile:text-xl pb-2 last:pb-0">
+        <span class="line-clamp-2">{{button_login}}</span>
+      </h4>
+      <div class="group form-group">
+        <label for="input-email" class="block mb-2 text-sm font-medium">{{ entry_email }}</label>
+        <input type="text" name="email" value="" placeholder="{{ entry_email }}" id="input-email" autocomplete="email"
+          class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+            group-has-[.text-danger]:text-red-600 group-has-[.text-danger]:border-red-600 peer">
+      </div>
+    
+      <div class="group form-group">
+        <label for="input-password" class="block mb-2 text-sm font-medium">{{entry_password}}</label>
+        <input type="password" name="password" value="" placeholder="{{ entry_password }}" id="input-password" autocomplete="none" aria-autocomplete="inline"
+          class="block w-full p-2.5 bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg
+          focus:ring-lightGreen focus:border-darkGreen
+            [&.has-error]:focus:red-600 [&.has-error]:focus:border-red-600
+          group-has-[.text-danger]:text-red-600 group-has-[.text-danger]:border-red-600 peer">
+      </div>
+    
+      <div id="button-login-action" class="flex flex-col flex-1 gap-3 items-end justify-between">
+        <a href="{{ forgotten }}" class="font-medium text-darkGreen hover:text-lightGreen underline">{{ text_forgotten }}</a>
+        <input type="button"
+          id="button-login"
+          value="{{ button_login }}"
+          class="w-full text-white bg-gradient-to-r from-lightGreen to-darkGreen focus:ring-4 focus:bg-darkGreen font-medium rounded-md text-base p-3 xl-notebook:p-5 focus:outline-none cursor-pointer" />
+      </div>
+    </div>
+  
+  </form>
+</div>
+
+
+
+<script type="text/javascript"><!--
+  jQuery('[name=account]')
+    .on('change', function(event){
+
+    jQuery('#custom-login .panel-body').find('.alert').remove();
+    let account = event.target.value;
+
+    $.ajax({
+      url: 'index.php?route=extension/module/custom/login/save',
+      data: {'account': account},
+      dataType: 'json',
+      type: 'post',
+      success: function(){
+        custom_block.render('customer');
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+
+    if (account === 'auth') {
+
+      jQuery('#auth-form').removeClass('hidden');
+
+
+      jQuery('#custom-customer').addClass('hidden');
+      jQuery('#custom-shipping').addClass('hidden');
+      jQuery('#custom-payment').addClass('hidden');
+      jQuery('#custom-comment').addClass('hidden');
+      jQuery('#custom-module').addClass('hidden');
+      jQuery('#custom-total').addClass('hidden');
+      jQuery('#custom-confirm').addClass('hidden');
+
+    } else {
+
+      jQuery('#auth-form').addClass('hidden');
+
+      jQuery('#custom-customer').removeClass('hidden');
+      jQuery('#custom-shipping').removeClass('hidden');
+      jQuery('#custom-payment').removeClass('hidden');
+      jQuery('#custom-comment').removeClass('hidden');
+      jQuery('#custom-module').removeClass('hidden');
+      jQuery('#custom-total').removeClass('hidden');
+      jQuery('#custom-confirm').removeClass('hidden');
+
+    }
+
+  });
+  jQuery(document).ready(function($) {
+    jQuery('[name=account]:checked').trigger('change'); 
+  });
+
+  jQuery('#auth-form').on('submit', function(event){
+
+    event.preventDefault();
+
+    $.ajax({
+      url: 'index.php?route=checkout/login/save',
+      data: jQuery(this).serialize(),
+      dataType: 'json',
+      type: 'post',
+      success: function(json){
+
+        if (json['redirect']) {
+          location = json['redirect'];
+        } else if (json['error']) {
+          if (json['error']['warning']) {
+            iziToast.warning({
+              message: json['error']['warning'],
+              target: '#custom-login .alert-target',
+              targetFirst: false,
+            });
+          }
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+
+  });
+//--></script>

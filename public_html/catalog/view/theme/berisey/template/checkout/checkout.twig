@@ -1,0 +1,1093 @@
+{{ header }}
+
+<main id="checkout-checkout" class="relative z-30 max-w-full md:px-3">
+    <div class="main-container max-w-screen-xl-monitor mx-auto grid main-bg-linear">
+
+        {% if breadcrumbs %}
+        <nav class="breadcrumb-list flex justify-start pt-6 px-8" aria-label="Breadcrumb">
+            <ol class="inline-flex flex-wrap">
+            {% for breadcrumb in breadcrumbs %}
+                <li class="inline-flex items-start justify-end group/breadcrump-item before:block before:content-['\\'] before:px-2 first:before:content-none before:text-textGray">
+                <a href="{{breadcrumb.href}}" class="inline-flex items-center text-textGray min-h-6 hover:text-darkGreen group-last/breadcrump-item:hover:text-textGray group-last/breadcrump-item:pointer-events-none">
+                    <svg class="w-4 h-4 me-2 hidden group-first/breadcrump-item:block" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
+                    </svg>
+                    <span class="ms-1 text-sm font-medium group-last/breadcrump-item:font-semibold group-last/breadcrump-item:text-lightBlack group-last/breadcrump-item:pb-1 grid">
+                    <span class="breadcrump-text">{{breadcrumb.text}}</span>
+                    </span>
+                </a>
+                </li>
+            {% endfor %}
+
+            </ol>
+        </nav>
+        {% endif %}
+
+        <section class="w-full pt-8">
+            <div class="grid grid-cols-1 sm-notebook:grid-cols-[3fr_minmax(320px,_1fr)] gap-8">
+
+                <div id="content" class="w-full bg-white rounded-3xl p-8 px-2 xl-mobile:px-6 grid">
+
+                    <h1 class="block text-lightBlack text-xl font-bold sm-mobile:text-2xl xl-notebook:text-5xl pb-12 last:pb-0">
+                        <span class="line-clamp-2">{{heading_title}}</span>
+                    </h1>
+
+                    {% if error_warning %}
+
+                        <div id="checkout-alert" class="flex items-center p-4 mb-4 text-red-800 rounded-lg bg-red-50" role="alert">
+                            <svg class="w-5 h-5 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v5Z"/>
+                            </svg>
+                            <span class="sr-only">Информация</span>
+                            <div class="ms-3 text-sm font-medium alert-message">{{ error_warning }}</div>
+                            <button type="button" 
+                                class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8" 
+                                data-dismiss-target="#checkout-alert" 
+                                aria-label="Close">
+                                <span class="sr-only">Закрыть</span>
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                            </button>
+                        </div>
+                    {% endif %}
+
+                    <div class="flex gap-3">
+                        <ol class="hidden xl-tablet:block items-center w-full max-w-60 space-y-4" id="checkout-tab" data-tabs-toggle="#checkout-tab-content" role="tablist">
+                            <li class="flex w-full items-center text-lightGray" role="presentation">
+                                <button id="checkout-option-tab" disabled
+                                    class="inline-flex p-4 rounded-t-lg hover:text-darkGreen hover:border-lightGreen w-full space-x-2.5 text-start group">
+                                    <span class="flex items-center justify-center w-8 h-8 border group-[&.active]:border-lightGreen rounded-full shrink-0 group-[&.active]:font-semibold group-[&.step-completed]:bg-lightGreen">
+                                        <span class="step-number group-[&.step-completed]:hidden">1</span>
+                                        <span class="step-icon hidden group-[&.step-completed]:block" >
+                                            <svg class="w-3.5 h-3.5 text-white lg:w-4 lg:h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                                            </svg>
+                                        </span>
+                                    </span>
+                                    <span>
+                                        <h3 class="font-semibold leading-tight">{{ _text_step_1 }}</h3>
+                                        <p class="text-xs tab-heading">{{ _text_checkout_option }}</p>
+                                    </span>
+                                </button>
+                            </li>
+
+                            {% if not logged and account != 'guest' %}
+                                <li class="flex w-full items-center text-lightGray" role="presentation">
+                                    <button id="checkout-account-tab" disabled
+                                        class="inline-flex p-4 rounded-t-lg hover:text-darkGreen hover:border-lightGreen w-full space-x-2.5 text-start group" >
+                                        <span class="flex items-center justify-center w-8 h-8 border group-[&.active]:border-lightGreen rounded-full shrink-0 group-[&.active]:font-semibold group-[&.step-completed]:bg-lightGreen">
+                                            <span class="step-number group-[&.step-completed]:hidden">2</span>
+                                            <span class="step-icon hidden group-[&.step-completed]:block" >
+                                                <svg class="w-3.5 h-3.5 text-white lg:w-4 lg:h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                                                </svg>
+                                            </span>
+                                        </span>
+                                        <span>
+                                            <h3 class="font-semibold leading-tight">{{ _text_step_2 }}</h3>
+                                            <p class="text-xs tab-heading tab-heading">{{_text_checkout_account}}</p>
+                                        </span>
+                                    </button>
+                                </li>
+                            {% else %}
+                                <li class="flex w-full items-center text-lightGray" role="presentation">
+                                    <button id="checkout-payment-address-tab" disabled
+                                        class="inline-flex p-4 rounded-t-lg hover:text-darkGreen hover:border-lightGreen w-full space-x-2.5 text-start group" >
+                                        <span class="flex items-center justify-center w-8 h-8 border group-[&.active]:border-lightGreen rounded-full shrink-0 group-[&.active]:font-semibold group-[&.step-completed]:bg-lightGreen">
+                                            <span class="step-number group-[&.step-completed]:hidden">2</span>
+                                            <span class="step-icon hidden group-[&.step-completed]:block" >
+                                                <svg class="w-3.5 h-3.5 text-white lg:w-4 lg:h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                                                </svg>
+                                            </span>
+                                        </span>
+                                        <span>
+                                            <h3 class="font-semibold leading-tight">{{ _text_step_2 }}</h3>
+                                            <p class="text-xs tab-heading">{{_text_checkout_payment_address}}</p>
+                                        </span>
+                                    </button>
+                                </li>
+                            {% endif %}
+
+                            {% if shipping_required %}
+                                <li class="flex w-full items-center text-lightGray" role="presentation">
+                                    <button id="checkout-shipping-address-tab" disabled
+                                        class="inline-flex p-4 rounded-t-lg hover:text-darkGreen hover:border-lightGreen w-full space-x-2.5 text-start group" >
+                                        <span class="flex items-center justify-center w-8 h-8 border group-[&.active]:border-lightGreen rounded-full shrink-0 group-[&.active]:font-semibold group-[&.step-completed]:bg-lightGreen">
+                                            <span class="step-number group-[&.step-completed]:hidden">3</span>
+                                            <span class="step-icon hidden group-[&.step-completed]:block" >
+                                                <svg class="w-3.5 h-3.5 text-white lg:w-4 lg:h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                                                </svg>
+                                            </span>
+                                        </span>
+                                        <span>
+                                            <h3 class="font-semibold leading-tight">{{_text_step_3}}</h3>
+                                            <p class="text-xs tab-heading">{{_text_checkout_shipping_address}}</p>
+                                        </span>
+                                    </button>
+                                </li>
+                                <li class="flex w-full items-center text-lightGray" role="presentation">
+                                    <button id="checkout-shipping-method-tab" disabled
+                                        class="inline-flex p-4 rounded-t-lg hover:text-darkGreen hover:border-lightGreen w-full space-x-2.5 text-start group" >
+                                        <span class="flex items-center justify-center w-8 h-8 border group-[&.active]:border-lightGreen rounded-full shrink-0 group-[&.active]:font-semibold group-[&.step-completed]:bg-lightGreen">
+                                            <span class="step-number group-[&.step-completed]:hidden">4</span>
+                                            <span class="step-icon hidden group-[&.step-completed]:block" >
+                                                <svg class="w-3.5 h-3.5 text-white lg:w-4 lg:h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                                                </svg>
+                                            </span>
+                                        </span>
+                                        <span>
+                                            <h3 class="font-semibold leading-tight">{{_text_step_4}}</h3>
+                                            <p class="text-xs tab-heading">{{_text_checkout_shipping_method}}</p>
+                                        </span>
+                                    </button>
+                                </li>
+                            {% endif %}
+
+                            <li class="flex w-full items-center text-lightGray" role="presentation">
+                                <button id="checkout-payment-method-tab" disabled
+                                    class="inline-flex p-4 rounded-t-lg hover:text-darkGreen hover:border-lightGreen w-full space-x-2.5 text-start group" >
+                                    <span class="flex items-center justify-center w-8 h-8 border group-[&.active]:border-lightGreen rounded-full shrink-0 group-[&.active]:font-semibold group-[&.step-completed]:bg-lightGreen">
+                                        <span class="step-number group-[&.step-completed]:hidden">5</span>
+                                        <span class="step-icon hidden group-[&.step-completed]:block" >
+                                            <svg class="w-3.5 h-3.5 text-white lg:w-4 lg:h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                                            </svg>
+                                        </span>
+                                    </span>
+                                    <span>
+                                        <h3 class="font-semibold leading-tight">{{_text_step_5}}</h3>
+                                        <p class="text-xs tab-heading">{{_text_checkout_payment_method}}</p>
+                                    </span>
+                                </button>
+                            </li>
+
+                            <li class="flex w-full items-center text-lightGray" role="presentation">
+                                <button id="checkout-confirm-tab" disabled
+                                    class="inline-flex p-4 rounded-t-lg hover:text-darkGreen hover:border-lightGreen w-full space-x-2.5 text-start group" >
+                                    <span class="flex items-center justify-center w-8 h-8 border group-[&.active]:border-lightGreen rounded-full shrink-0 group-[&.active]:font-semibold group-[&.step-completed]:bg-lightGreen">
+                                        <span class="step-number group-[&.step-completed]:hidden">6</span>
+                                        <span class="step-icon hidden group-[&.step-completed]:block" >
+                                            <svg class="w-3.5 h-3.5 text-white lg:w-4 lg:h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                                            </svg>
+                                        </span>
+                                    </span>
+                                    <span>
+                                        <h3 class="font-semibold leading-tight">{{_text_step_6}}</h3>
+                                        <p class="text-xs tab-heading">{{_text_checkout_confirm}}</p>
+                                    </span>
+                                </button>
+                            </li>
+                        </ol>
+
+                        <div id="checkout-tab-content" class="flex-auto w-full">
+
+                            <div class="hidden p-4 rounded-lg bg-lightBlue h-full" id="checkout-option-content" role="tabpanel" aria-labelledby="checkout-option-tab">
+                                <h4 class="block text-lightBlack text-base font-bold sm-mobile:text-2xl xl-notebook:text-3xl pb-6 last:pb-0">
+                                    <span class="line-clamp-2">{{text_checkout_option}}</span>
+                                </h4>
+                                <div id="collapse-checkout-option">
+                                    <div class="panel-body"></div>
+                                </div>
+                            </div>
+
+                            {% if not logged and account != 'guest' %}
+                                <div class="hidden p-4 rounded-lg bg-lightBlue h-full" id="checkout-account-content" role="tabpanel" aria-labelledby="checkout-account-tab">
+                                    <h4 class="block text-lightBlack text-base font-bold sm-mobile:text-2xl xl-notebook:text-3xl pb-6 last:pb-0">
+                                        <span class="line-clamp-2">{{text_checkout_account}}</span>
+                                    </h4>
+                                    <div id="collapse-payment-address">
+                                        <div class="panel-body"></div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="hidden p-4 rounded-lg bg-lightBlue h-full" id="checkout-payment-address-content" role="tabpanel" aria-labelledby="checkout-payment-address-tab">
+                                    <h4 class="block text-lightBlack text-base font-bold sm-mobile:text-2xl xl-notebook:text-3xl pb-6 last:pb-0">
+                                        <span class="line-clamp-2">{{text_checkout_payment_address}}</span>
+                                    </h4>
+                                    <div id="collapse-payment-address">
+                                        <div class="panel-body"></div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if shipping_required %}
+                                <div class="hidden p-4 rounded-lg bg-lightBlue h-full" id="checkout-shipping-address-content" role="tabpanel" aria-labelledby="checkout-shipping-address-tab">
+                                    <h4 class="block text-lightBlack text-base font-bold sm-mobile:text-2xl xl-notebook:text-3xl pb-6 last:pb-0">
+                                        <span class="line-clamp-2">{{text_checkout_shipping_address}}</span>
+                                    </h4>
+                                    <div id="collapse-shipping-address">
+                                        <div class="panel-body"></div>
+                                    </div>
+                                </div>
+                                <div class="hidden p-4 rounded-lg bg-lightBlue h-full" id="checkout-shipping-method-content" role="tabpanel" aria-labelledby="checkout-shipping-method-tab">
+                                    <h4 class="block text-lightBlack text-base font-bold sm-mobile:text-2xl xl-notebook:text-3xl pb-6 last:pb-0">
+                                        <span class="line-clamp-2">{{text_checkout_shipping_method}}</span>
+                                    </h4>
+                                    <div id="collapse-shipping-method">
+                                        <div class="panel-body"></div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="hidden p-4 rounded-lg bg-lightBlue h-full" id="checkout-payment-method-content" role="tabpanel" aria-labelledby="checkout-payment-method-tab">
+                                <h4 class="block text-lightBlack text-base font-bold sm-mobile:text-2xl xl-notebook:text-3xl pb-6 last:pb-0">
+                                    <span class="line-clamp-2">{{text_checkout_payment_method}}</span>
+                                </h4>
+                                <div id="collapse-payment-method">
+                                    <div class="panel-body"></div>
+                                </div>
+                            </div>
+
+                            <div class="hidden p-4 rounded-lg bg-lightBlue h-full" id="checkout-confirm-content" role="tabpanel" aria-labelledby="checkout-confirm-tab">
+                                <h4 class="block text-lightBlack text-base font-bold sm-mobile:text-2xl xl-notebook:text-3xl pb-6 last:pb-0">
+                                    <span class="line-clamp-2">{{text_checkout_confirm}}</span>
+                                </h4>
+                                <div id="collapse-checkout-confirm">
+                                    <div class="panel-body"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <aside class="gap-6 bg-white rounded-3xl p-6 py-8 md:flex flex-col">
+                    <div class="mt-4 space-y-6">
+                        <h4 class="text-xl font-semibold text-gray-900">Order summary</h4>
+
+                        <div class="space-y-4">
+                            <div class="space-y-2">
+                                <dl class="flex items-center justify-between gap-4">
+                                    <dt class="text-lightGray">Original price</dt>
+                                    <dd class="text-base font-medium text-gray-900">$6,592.00</dd>
+                                </dl>
+
+                                <dl class="flex items-center justify-between gap-4">
+                                    <dt class="text-lightGray">Savings</dt>
+                                    <dd class="text-base font-medium text-green-500">-$299.00</dd>
+                                </dl>
+
+                                <dl class="flex items-center justify-between gap-4">
+                                    <dt class="text-lightGray">Store Pickup</dt>
+                                    <dd class="text-base font-medium text-gray-900">$99</dd>
+                                </dl>
+
+                                <dl class="flex items-center justify-between gap-4">
+                                    <dt class="text-lightGray">Tax</dt>
+                                    <dd class="text-base font-medium text-gray-900">$799</dd>
+                                </dl>
+                            </div>
+
+                                <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2">
+                                    <dt class="text-lg font-bold text-gray-900">Total</dt>
+                                    <dd class="text-lg font-bold text-gray-900">$7,191.00</dd>
+                                </dl>
+                        </div>
+
+                        <div class="flex items-start sm:items-center">
+                            <input id="terms-checkbox-2" type="checkbox" value="" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500" />
+                            <label for="terms-checkbox-2" class="ms-2 text-sm font-medium text-gray-900"> I agree with the <a href="#" title="" class="text-primary-700 underline hover:no-underline">Terms and Conditions</a> of use of the Flowbite marketplace </label>
+                        </div>
+
+                        <div class="gap-4 sm:flex sm:items-center">
+                            <button type="button" class="w-full rounded-lg  border border-gray-200 bg-white px-5  py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 ">Return to Shopping</button>
+
+                            <button type="submit" class="mt-4 flex w-full items-center justify-center rounded-lg bg-primary-700  px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300">Send the order</button>
+                        </div>
+                    </div>
+                </aside>
+
+            </div>
+        </section>
+    </div>
+		{% if content_bottom %}
+			<div class="main-container has-section-divided max-w-screen-xl-monitor mx-auto grid main-bg-linear gap-36 pt-11 *:-my-11">
+					{{content_bottom}}
+			</div>
+		{% endif %}
+</div>
+
+<div
+  x-data="{ 
+		'showModal': false,
+		heading: '',
+		body: '',
+		'actionLabel' : '',
+		openModal(event){
+			this.heading = event.detail.heading ?? ''
+			this.body = event.detail.body ?? ''
+			this.actionLabel = event.detail.actionLabel ?? ''
+			this.showModal = true;
+		}
+	}"
+  @keydown.escape="showModal = false"
+	@open-modal.window="openModal($event)"
+>
+	<template x-teleport="body">
+		 <div
+        tabindex="-1"
+				aria-hidden="true"
+				class="fixed left-0 right-0 top-0 z-50 h-[calc(100%-1rem)] max-h-full w-full flex justify-center items-center overflow-y-auto overflow-x-hidden p-4 md:inset-0 bg-gray-900/50"
+        x-show="showModal"
+    >
+			<div class="relative max-h-full w-full max-w-full overflow-auto rounded-lg scroll-dir-rtl" @click.away="showModal = false"
+				x-transition:enter="motion-safe:ease-out duration-300"
+				x-transition:enter-start="opacity-0 scale-90"
+				x-transition:enter-end="opacity-100 scale-100">
+				<div class="relative rounded-lg bg-white shadow-sm">
+
+						<div class="flex items-start justify-between rounded-t border-b p-5 sticky top-0 bg-lightBlue" x-show="heading">
+								<h3 class="text-xl font-semibold text-lightBlack lg:text-2xl" x-text="heading"></h3>
+								<button
+										type="button"
+										@click="showModal = false"
+										class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-lightBlack hover:bg-gray-200 hover:text-gray-900"
+								>
+										<svg
+												class="h-3 w-3"
+												aria-hidden="true"
+												xmlns="http://www.w3.org/2000/svg"
+												fill="none"
+												viewBox="0 0 14 14"
+										>
+												<path
+														stroke="currentColor"
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="2"
+														d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+												/>
+										</svg>
+										<span class="sr-only">Close modal</span>
+								</button>
+						</div>
+						<div class="space-y-6 p-6" x-html="body" x-show="body"></div>
+
+						<div
+								class="flex items-center justify-end space-x-2 rtl:space-x-reverse rounded-b border-t border-gray-200 p-6 sticky bottom-0 bg-lightBlue" x-show="actionLabel"
+						>
+								<button type="button" 
+									@click="showModal = false"
+									class="w-max text-white bg-gradient-to-r from-darkGreen to-lightGreen cursor-pointer focus:ring-4 focus:bg-darkGreen font-medium rounded-md text-base p-3 xl-notebook:p-5 focus:outline-none"
+									x-text="actionLabel"
+									>
+								</button>
+						</div>
+				</div>
+			</div>
+
+    </div>
+	</template>
+
+</div>
+
+
+<script type="text/javascript"><!--
+    let CheckoutTabs = {};
+    $(document).ready(function(){
+        CheckoutTabs = new Tabs(
+            document.getElementById('checkout-tab'), 
+            [
+                {
+                    id: 'checkout-option-tab',
+                    triggerEl: document.querySelector('#checkout-option-tab'),
+                    targetEl: document.querySelector('#checkout-option-content'),
+                },
+                {% if not logged and account != 'guest' %}
+                {
+                    id: 'checkout-account-tab',
+                    triggerEl: document.querySelector('#checkout-account-tab'),
+                    targetEl: document.querySelector('#checkout-account-content'),
+                },
+                {% else %}
+                {
+                    id: 'checkout-payment-address-tab',
+                    triggerEl: document.querySelector('#checkout-payment-address-tab'),
+                    targetEl: document.querySelector('#checkout-payment-address-content'),
+                },
+                {% endif %}
+                {% if shipping_required %}
+                {
+                    id: 'checkout-shipping-address-tab',
+                    triggerEl: document.querySelector('#checkout-shipping-address-tab'),
+                    targetEl: document.querySelector('#checkout-shipping-address-content'),
+                },
+                {
+                    id: 'checkout-shipping-method-tab',
+                    triggerEl: document.querySelector('#checkout-shipping-method-tab'),
+                    targetEl: document.querySelector('#checkout-shipping-method-content'),
+                },
+                {% endif %}
+                {
+                    id: 'checkout-payment-method-tab',
+                    triggerEl: document.querySelector('#checkout-payment-method-tab'),
+                    targetEl: document.querySelector('#checkout-payment-method-content'),
+                },
+                {
+                    id: 'checkout-confirm-tab',
+                    triggerEl: document.querySelector('#checkout-confirm-tab'),
+                    targetEl: document.querySelector('#checkout-confirm-content'),
+                },
+            ], 
+            {
+                defaultTabId: null,
+                activeClasses: 'text-darkGreen border-b-2 border-lightGreen active',
+                inactiveClasses: 'text-lightGray hover:text-lightGray inactive',
+            }, 
+            {
+                id: 'checkout-tab',
+                override: true
+            }
+        );
+    })
+
+    $(document)
+        .on('change', 'input[name=\'account\']', function() {
+            if (this.value == 'register') {
+                $('#checkout-account-tab .tab-heading').html('{{ _text_checkout_account }}');
+            } else {
+                $('#checkout-account-tab .tab-heading').html('{{ _text_checkout_payment_address }}');
+            }
+        
+    });
+
+{% if not logged %}
+	$(document).ready(function() {
+        $.ajax({
+            url: 'index.php?route=checkout/login',
+            dataType: 'html',
+            success: function(html) {
+                $('#collapse-checkout-option .panel-body').html(html);
+                $('#checkout-option-tab .tab-heading').html('{{ _text_checkout_option }}');
+                CheckoutTabs.show('checkout-option-tab');
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+	});
+{% else %}
+	$(document).ready(function() {
+        $.ajax({
+            url: 'index.php?route=checkout/payment_address',
+            dataType: 'html',
+            success: function(html) {
+                $('#collapse-payment-address .panel-body').html(html);
+                $('#checkout-payment-address-tab .tab-heading').html('{{ _text_checkout_payment_address }}');
+                CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                CheckoutTabs.show('checkout-payment-address-tab');
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                    alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+	});
+{% endif %}
+// Checkout
+$(document).delegate('#button-account', 'click', function() {
+    $.ajax({
+        url: 'index.php?route=checkout/' + $('input[name=\'account\']:checked').val(),
+        dataType: 'html',
+        beforeSend: function() {},
+        complete: function() {},
+        success: function(html) {
+            $('#collapse-payment-address .panel-body').html(html);
+            if ($('input[name=\'account\']:checked').val() == 'register') {
+                $('#checkout-account-tab .tab-heading').html('{{ _text_checkout_account }}');
+                $('#checkout-account-content h4 > span').html('{{ _text_checkout_account }}');
+            } else {
+                $('#checkout-account-tab .tab-heading').html('{{ _text_checkout_payment_address }}');
+                $('#checkout-account-content h4 > span').html('{{ _text_checkout_payment_address }}');
+            }
+            CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+            CheckoutTabs.show('checkout-payment-address');
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+// Login
+$(document).delegate('#button-login', 'click', function() {
+    $.ajax({
+        url: 'index.php?route=checkout/login/save',
+        type: 'post',
+        data: $('#collapse-checkout-option :input'),
+        dataType: 'json',
+        beforeSend: function() {},
+        complete: function() {},
+        success: function(json) {
+            $('.form-group').removeClass('has-error');
+
+            if (json['redirect']) {
+                location = json['redirect'];
+            } else if (json['error']) {
+
+                iziToast.warning({
+                    title: 'Упс...Что то не так!',
+                    message: json['error']['warning'],
+                    target: '#button-login-action',
+                });
+
+                // Highlight any found errors
+                $('input[name=\'email\']').addClass('has-error');
+                $('input[name=\'email\']').parent().addClass('has-error');
+                $('input[name=\'password\']').parent().addClass('has-error');
+                $('input[name=\'password\']').addClass('has-error');
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+// Register
+$(document).delegate('#button-register', 'click', function() {
+    $.ajax({
+        url: 'index.php?route=checkout/register/save',
+        type: 'post',
+        data: $('#collapse-payment-address input[type=\'text\'], #collapse-payment-address input[type=\'date\'], #collapse-payment-address input[type=\'datetime-local\'], #collapse-payment-address input[type=\'time\'], #collapse-payment-address input[type=\'password\'], #collapse-payment-address input[type=\'hidden\'], #collapse-payment-address input[type=\'checkbox\']:checked, #collapse-payment-address input[type=\'radio\']:checked, #collapse-payment-address textarea, #collapse-payment-address select'),
+        dataType: 'json',
+        beforeSend: function() {},
+        success: function(json) {
+            $('.has-error').removeClass('has-error');
+            $('.input-validation-error-message').remove()
+
+            if (json['redirect']) {
+                location = json['redirect'];
+            } else if (json['error']) {
+
+                if (json['error']['warning']) {
+                    iziToast.warning({
+                        title: 'Упс...Что то не так!',
+                        message: json['error']['warning'],
+                        target: '#button-register-action',
+                    });
+                }
+
+                for (i in json['error']) {
+                    var element = $('#input-payment-' + i.replace('_', '-'));
+                    $(element).after('<p class="hidden input-validation-error-message mt-2 text-sm text-red-600 group-has-[.has-error]:block">' + json['error'][i] + '</p>');
+                    $(element).addClass('has-error')
+                    $(element).parent().addClass('has-error')
+                }
+
+            } else {
+                {% if shipping_required %}
+                    var shipping_address = $('#payment-address input[name=\'shipping_address\']:checked').prop('value');
+
+                    if (shipping_address) {
+                        $.ajax({
+                            url: 'index.php?route=checkout/shipping_method',
+                            dataType: 'html',
+                            success: function(html) {
+                                // Add the shipping address
+                                $.ajax({
+                                    url: 'index.php?route=checkout/shipping_address',
+                                    dataType: 'html',
+                                    success: function(html) {
+                                        $('#collapse-shipping-address .panel-body').html(html);
+                                    },
+                                    error: function(xhr, ajaxOptions, thrownError) {
+                                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                                    }
+                                });
+
+                                $('#collapse-shipping-method .panel-body').html(html);
+                                CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                                CheckoutTabs.show('checkout-shipping-method-tab');
+                                $('#checkout-shipping-method-tab .tab-heading').html('{{ _text_checkout_shipping_method }}');
+                                $('#checkout-payment-method-tab .tab-heading').html('{{ _text_checkout_payment_method }}');
+                                $('#checkout-checkout-confirm-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+
+                            },
+                            error: function(xhr, ajaxOptions, thrownError) {
+                                    alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                            }
+                        });
+                    } else {
+                        $.ajax({
+                            url: 'index.php?route=checkout/shipping_address',
+                            dataType: 'html',
+                            success: function(html) {
+                                $('#collapse-shipping-address .panel-body').html(html);
+                                $('#checkout-shipping-address-tab .tab-heading').html('{{ _text_checkout_shipping_address }}');
+                                CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                                CheckoutTabs.show('checkout-shipping-address-tab');
+                                $('#checkout-shipping-method-tab .tab-heading').html('{{ _text_checkout_shipping_method }}');
+                                $('#checkout-payment-method-tab .tab-heading').html('{{ _text_checkout_payment_method }}');
+                                $('#checkout-checkout-confirm-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+                            },
+                            error: function(xhr, ajaxOptions, thrownError) {
+                                    alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                            }
+                        });
+                    }
+                {% else %}
+                    $.ajax({
+                        url: 'index.php?route=checkout/payment_method',
+                        dataType: 'html',
+                        success: function(html) {
+                            $('#collapse-payment-method .panel-body').html(html);
+                            $('#checkout-payment-method-tab .tab-heading').html('{{ _text_checkout_payment_method }}');
+                            $('#checkout-confirm-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+                            CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                            CheckoutTabs.show('checkout-payment-method-tab');
+                        },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                        }
+                    });
+                {% endif %}
+
+                $.ajax({
+                    url: 'index.php?route=checkout/payment_address',
+                    dataType: 'html',
+                    success: function(html) {
+                        $('#collapse-payment-address .panel-body').html(html);
+                        $('#checkout-payment-address-tab .tab-heading').html('{{ _text_checkout_payment_address }}');
+                        CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                        CheckoutTabs.show('checkout-payment-address-tab');
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                });
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+
+// Guest
+$(document).delegate('#button-guest', 'click', function() {
+    $.ajax({
+        url: 'index.php?route=checkout/guest/save',
+        type: 'post',
+        data: $('#collapse-payment-address input[type=\'text\'], #collapse-payment-address input[type=\'date\'], #collapse-payment-address input[type=\'datetime-local\'], #collapse-payment-address input[type=\'time\'], #collapse-payment-address input[type=\'checkbox\']:checked, #collapse-payment-address input[type=\'radio\']:checked, #collapse-payment-address input[type=\'hidden\'], #collapse-payment-address textarea, #collapse-payment-address select'),
+        dataType: 'json',
+        success: function(json) {
+            $('.form-group').removeClass('has-error');
+
+            if (json['redirect']) {
+                location = json['redirect'];
+            } else if (json['error']) {
+
+                if (json['error']['warning']) {
+                    iziToast.warning({
+                        title: 'Упс...Что то не так!',
+                        message: json['error']['warning'],
+                        target: '#button-guest-action',
+                    });
+                }
+
+				for (i in json['error']) {
+                    var element = $('#input-payment-' + i.replace('_', '-'));
+                    $(element).after('<p class="hidden input-validation-error-message mt-2 text-sm text-red-600 group-has-[.has-error]:block">' + json['error'][i] + '</p>');
+                    $(element).addClass('has-error')
+                    $(element).parent().addClass('has-error')
+				}
+
+            } else {
+                {% if shipping_required %}
+                var shipping_address = $('#collapse-payment-address input[name=\'shipping_address\']:checked').prop('value');
+
+                if (shipping_address) {
+                    $.ajax({
+                        url: 'index.php?route=checkout/shipping_method',
+                        dataType: 'html',
+                        success: function(html) {
+							// Add the shipping address
+                            $.ajax({
+                                url: 'index.php?route=checkout/guest_shipping',
+                                dataType: 'html',
+                                success: function(html) {
+                                    $('#collapse-shipping-address .panel-body').html(html);
+                                    $('#checkout-shipping-address-tab .tab-heading').html('{{ _text_checkout_shipping_address }}');
+                                },
+                                error: function(xhr, ajaxOptions, thrownError) {
+                                    alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                                }
+                            });
+
+                            $('#collapse-shipping-method .panel-body').html(html);
+                            $('#checkout-shipping-address-tab .tab-heading').html('{{ _text_checkout_shipping_method }}');
+                            CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                            CheckoutTabs.show('checkout-shipping-method-tab');
+
+                            $('#checkout-payment-method-tab .tab-heading').html('{{ _text_checkout_payment_method }}');
+                            $('#checkout-checkout-confirm-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+                        },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: 'index.php?route=checkout/guest_shipping',
+                        dataType: 'html',
+                        success: function(html) {
+                            $('#collapse-shipping-address .panel-body').html(html);
+                            $('#checkout-shipping-address-tab .tab-heading').html('{{ _text_checkout_shipping_address }}');
+                            CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                            CheckoutTabs.show('checkout-shipping-address-tab');
+                            $('#checkout-shipping-method-tab .tab-heading').html('{{ _text_checkout_shipping_method }}');
+                            $('#checkout-payment-method-tab .tab-heading').html('{{ _text_checkout_payment_method }}');
+                            $('#checkout-checkout-confirm-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+                        },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                        }
+                    });
+                }
+                {% else %}
+                $.ajax({
+                    url: 'index.php?route=checkout/payment_method',
+                    dataType: 'html',
+                    success: function(html) {
+                        $('#collapse-payment-method .panel-body').html(html);
+                        $('#checkout-payment-method-tab .tab-heading').html('{{ _text_checkout_payment_method }}');
+                        CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                        CheckoutTabs.show('checkout-payment-method-tab');
+                        $('#checkout-checkout-confirm-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                });
+                {% endif %}
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+// Payment Address
+$(document).delegate('#button-payment-address', 'click', function() {
+    $.ajax({
+        url: 'index.php?route=checkout/payment_address/save',
+        type: 'post',
+        data: $('#collapse-payment-address input[type=\'text\'], #collapse-payment-address input[type=\'date\'], #collapse-payment-address input[type=\'datetime-local\'], #collapse-payment-address input[type=\'time\'], #collapse-payment-address input[type=\'password\'], #collapse-payment-address input[type=\'checkbox\']:checked, #collapse-payment-address input[type=\'radio\']:checked, #collapse-payment-address input[type=\'hidden\'], #collapse-payment-address textarea, #collapse-payment-address select'),
+        dataType: 'json',
+        success: function(json) {
+			$('.form-group').removeClass('has-error');
+
+            if (json['redirect']) {
+                location = json['redirect'];
+            } else if (json['error']) {
+                if (json['error']['warning']) {
+                    iziToast.warning({
+                        title: 'Упс...Что то не так!',
+                        message: json['error']['warning'],
+                        target: '#button-payment-address-action',
+                    });
+                }
+				for (i in json['error']) {
+                    var element = $('#input-payment-' + i.replace('_', '-'));
+                    $(element).after('<p class="hidden input-validation-error-message mt-2 text-sm text-red-600 group-has-[.has-error]:block">' + json['error'][i] + '</p>');
+                    $(element).addClass('has-error')
+                    $(element).parent().addClass('has-error')
+				}
+
+            } else {
+                {% if shipping_required %}
+                $.ajax({
+                    url: 'index.php?route=checkout/shipping_address',
+                    dataType: 'html',
+                    success: function(html) {
+                        $('#collapse-shipping-address .panel-body').html(html);
+                        $('#collapse-shipping-address .panel-body').html(html);
+                        $('#checkout-shipping-address-tab .tab-heading').html('{{ _text_checkout_shipping_address }}');
+                        CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                        CheckoutTabs.show('checkout-shipping-address-tab');
+                        $('#checkout-shipping-method-tab .tab-heading').html('{{ _text_checkout_shipping_method }}');
+                        $('#checkout-payment-method-tab .tab-heading').html('{{ _text_checkout_payment_method }}');
+                        $('#checkout-checkout-confirm-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                }).done(function() {
+					$.ajax({
+						url: 'index.php?route=checkout/payment_address',
+						dataType: 'html',
+						success: function(html) {
+							$('#collapse-payment-address .panel-body').html(html);
+						},
+						error: function(xhr, ajaxOptions, thrownError) {
+							alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+						}
+					});
+				});
+                {% else %}
+                $.ajax({
+                    url: 'index.php?route=checkout/payment_method',
+                    dataType: 'html',
+                    success: function(html) {
+                        $('#collapse-payment-method .panel-body').html(html);
+                        $('#checkout-payment-method-tab .tab-heading').html('{{ _text_checkout_payment_method }}');
+                        CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                        CheckoutTabs.show('checkout-payment-method-tab');
+                        $('#checkout-checkout-confirm-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                }).done(function() {
+					$.ajax({
+						url: 'index.php?route=checkout/payment_address',
+						dataType: 'html',
+						success: function(html) {
+							$('#collapse-payment-address .panel-body').html(html);
+						},
+						error: function(xhr, ajaxOptions, thrownError) {
+							alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+						}
+					});				
+				});
+                {% endif %}
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+
+// Shipping Address
+$(document).delegate('#button-shipping-address', 'click', function() {
+    $.ajax({
+        url: 'index.php?route=checkout/shipping_address/save',
+        type: 'post',
+        data: $('#collapse-shipping-address input[type=\'text\'], #collapse-shipping-address input[type=\'date\'], #collapse-shipping-address input[type=\'datetime-local\'], #collapse-shipping-address input[type=\'time\'], #collapse-shipping-address input[type=\'password\'], #collapse-shipping-address input[type=\'checkbox\']:checked, #collapse-shipping-address input[type=\'radio\']:checked, #collapse-shipping-address textarea, #collapse-shipping-address select'),
+        dataType: 'json',
+        success: function(json) {
+			$('.form-group').removeClass('has-error');
+
+            if (json['redirect']) {
+                location = json['redirect'];
+            } else if (json['error']) {
+
+                if (json['error']['warning']) {
+                    iziToast.warning({
+                        title: 'Упс...Что то не так!',
+                        message: json['error']['warning'],
+                        target: '#button-shipping-address-action',
+                    });
+                }
+				for (i in json['error']) {
+                    var element = $('#input-shipping-' + i.replace('_', '-'));
+                    $(element).after('<p class="hidden input-validation-error-message mt-2 text-sm text-red-600 group-has-[.has-error]:block">' + json['error'][i] + '</p>');
+                    $(element).addClass('has-error')
+                    $(element).parent().addClass('has-error')
+				}
+
+            } else {
+                $.ajax({
+                    url: 'index.php?route=checkout/shipping_method',
+                    dataType: 'html',
+                    success: function(html) {
+                        $('#collapse-shipping-method .panel-body').html(html);
+                        $('#checkout-shipping-method-tab .tab-heading').html('{{ _text_checkout_payment_method }}');
+                        CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                        CheckoutTabs.show('checkout-shipping-method-tab');
+                        $('#checkout-payment-method-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+                        $('#checkout-confirm-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+						
+                        $.ajax({
+                            url: 'index.php?route=checkout/shipping_address',
+                            dataType: 'html',
+                            success: function(html) {
+                                $('#collapse-shipping-address .panel-body').html(html);
+                            },
+                            error: function(xhr, ajaxOptions, thrownError) {
+                                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                            }
+                        });
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                }).done(function() {
+					$.ajax({
+						url: 'index.php?route=checkout/payment_address',
+						dataType: 'html',
+						success: function(html) {
+							$('#collapse-payment-address .panel-body').html(html);
+						},
+						error: function(xhr, ajaxOptions, thrownError) {
+							alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+						}
+					});
+				});
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+
+
+
+// Guest Shipping
+$(document).delegate('#button-guest-shipping', 'click', function() {
+    $.ajax({
+        url: 'index.php?route=checkout/guest_shipping/save',
+        type: 'post',
+        data: $('#collapse-shipping-address input[type=\'text\'], #collapse-shipping-address input[type=\'date\'], #collapse-shipping-address input[type=\'datetime-local\'], #collapse-shipping-address input[type=\'time\'], #collapse-shipping-address input[type=\'password\'], #collapse-shipping-address input[type=\'checkbox\']:checked, #collapse-shipping-address input[type=\'radio\']:checked, #collapse-shipping-address textarea, #collapse-shipping-address select'),
+        dataType: 'json',
+        success: function(json) {
+			$('.form-group').removeClass('has-error');
+
+            if (json['redirect']) {
+                location = json['redirect'];
+            } else if (json['error']) {
+
+                if (json['error']['warning']) {
+                    iziToast.warning({
+                        title: 'Упс...Что то не так!',
+                        message: json['error']['warning'],
+                        target: '#button-shipping-address-action',
+                    });
+                }
+				for (i in json['error']) {
+                    var element = $('#input-shipping-' + i.replace('_', '-'));
+                    $(element).after('<p class="hidden input-validation-error-message mt-2 text-sm text-red-600 group-has-[.has-error]:block">' + json['error'][i] + '</p>');
+                    $(element).addClass('has-error')
+                    $(element).parent().addClass('has-error')
+				}
+            } else {
+                $.ajax({
+                    url: 'index.php?route=checkout/shipping_method',
+                    dataType: 'html',
+                    success: function(html) {
+                        $('#collapse-shipping-method .panel-body').html(html);
+                        $('#checkout-shipping-method-tab .tab-heading').html('{{ _text_checkout_payment_method }}');
+                        CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                        CheckoutTabs.show('checkout-shipping-method-tab');
+                        $('#checkout-payment-method-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+                        $('#checkout-confirm-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                });
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+
+$(document).delegate('#button-shipping-method', 'click', function() {
+    $.ajax({
+        url: 'index.php?route=checkout/shipping_method/save',
+        type: 'post',
+        data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea'),
+        dataType: 'json',
+        success: function(json) {
+
+            if (json['redirect']) {
+                location = json['redirect'];
+            } else if (json['error']) {
+                if (json['error']['warning']) {
+                    iziToast.warning({
+                        title: 'Упс...Что то не так!',
+                        message: json['error']['warning'],
+                        target: '#button-shipping-method-action',
+                    });
+                }
+				for (i in json['error']) {
+                    var element = $('#input-shipping-' + i.replace('_', '-'));
+                    $(element).after('<p class="hidden input-validation-error-message mt-2 text-sm text-red-600 group-has-[.has-error]:block">' + json['error'][i] + '</p>');
+                    $(element).addClass('has-error')
+                    $(element).parent().addClass('has-error')
+				}
+
+            } else {
+                $.ajax({
+                    url: 'index.php?route=checkout/payment_method',
+                    dataType: 'html',
+                    success: function(html) {
+                        $('#collapse-payment-method .panel-body').html(html);
+                        $('#checkout-payment-method-tab .tab-heading').html('{{ _text_checkout_payment_method }}');
+                        CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                        CheckoutTabs.show('checkout-payment-method-tab');
+                        $('#checkout-confirm-tab .tab-heading').html('{{ _text_checkout_confirm }}');
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                });
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+
+$(document).delegate('#button-payment-method', 'click', function() {
+    $.ajax({
+        url: 'index.php?route=checkout/payment_method/save',
+        type: 'post',
+        data: $('#collapse-payment-method input[type=\'radio\']:checked, #collapse-payment-method input[type=\'checkbox\']:checked, #collapse-payment-method textarea'),
+        dataType: 'json',
+        success: function(json) {
+
+            if (json['redirect']) {
+                location = json['redirect'];
+            } else if (json['error']) {
+                if (json['error']['warning']) {
+                    iziToast.warning({
+                        title: 'Упс...Что то не так!',
+                        message: json['error']['warning'],
+                        target: '#button-payment-method-action',
+                    });
+                }
+            } else {
+                $.ajax({
+                    url: 'index.php?route=checkout/confirm',
+                    dataType: 'html',
+                    success: function(html) {
+                        $('#collapse-checkout-confirm .panel-body').html(html);
+                        CheckoutTabs.getActiveTab().triggerEl.classList.add('step-completed')
+                        CheckoutTabs.show('checkout-confirm-tab');
+					},
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                });
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+
+//-->
+
+</script>
+
+{{ footer }}

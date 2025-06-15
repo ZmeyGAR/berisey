@@ -1,0 +1,63 @@
+
+{% if payment_methods %}
+  <p>{{ text_payment_method }}</p>
+  <div class="flex gap-3 flex-wrap w-full">
+    {% for payment_method in payment_methods %}
+
+      <div class="flex items-center ps-4 border border-gray-200 rounded-lg w-full flex-auto max-w-max group has-[:checked]:border-darkGreen has-[:checked]:focus:ring-darkGreen">
+        {% if payment_method.code == code or not code %}
+          {% set code = payment_method.code %}
+          <input id="payment_method-radio-{{code}}" type="radio" 
+            name="payment_method" 
+            value="{{ payment_method.code }}"
+            checked="checked"
+            class="w-4 h-4 text-lightGreen bg-lightBlue border-lightGreen focus:ring-darkGreen">
+        {% else %}
+          <input id="payment_method-radio-{{code}}" type="radio" 
+            name="payment_method" 
+            value="{{ payment_method.code }}"
+            class="w-4 h-4 text-lightGreen bg-lightBlue border-lightGreen focus:ring-darkGreen">
+        {% endif %}
+
+          <label for="payment_method-radio-{{code}}" class="w-full p-4 pl-0 ms-2 text-sm font-medium text-lightBlack">{{ payment_method.title }}</label>
+
+        {% if payment_method.terms %}
+          <p class="mt-2 text-sm text-lightBlack">{{ payment_method.terms }}</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+{% endif %}
+
+
+<p class="py-6">
+  <label for="comment" class="block mb-2 text-sm font-medium text-lightBlack">{{text_comment_label}}</label>
+  <textarea id="comment" name="comment" rows="8" class="block p-2.5 w-full text-sm text-lightBlack bg-lightBlue rounded-lg border border-lightGray focus:ring-darkGreen focus:border-darkGreen" placeholder="{{text_comments}}">{{ comment }}</textarea>
+</p>
+
+{% if text_agree %}
+  <div>
+    <div class="pull-right">
+      <input id="agreement" name="agree" type="checkbox" value="1" {% if agree %}checked="checked"{% endif %} class="w-4 h-4 text-darkGreen bg-lightBlue border-lightGreen rounded-sm focus:ring-darkGreen">
+      <label for="agreement" class="ms-2 text-sm font-medium text-lightBlack">{{ text_agree }}</label>
+    </div>
+  </div>
+{% endif %} 
+
+<div id="button-payment-method-action" class="flex flex-col flex-1 gap-3 items-end justify-between">
+  <input type="button" 
+    id="button-payment-method"
+    value="{{ button_continue }}"
+    class="w-full text-white bg-gradient-to-r from-lightGreen to-darkGreen focus:ring-4 focus:bg-darkGreen font-medium rounded-md text-base p-3 xl-notebook:p-5 focus:outline-none cursor-pointer" />
+</div>
+
+{% if error_warning %}
+  <script>
+    iziToast.warning({
+      title: 'Упс...Что то не так!',
+      message: {{ error_warning }},
+      target: '#button-payment-method-action',
+    });
+  </script>
+{% endif %}

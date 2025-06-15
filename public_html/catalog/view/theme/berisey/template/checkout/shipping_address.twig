@@ -1,0 +1,361 @@
+<form class="form-horizontal w-full flex flex-col">
+  {% if addresses %}
+  <div class="flex gap-3 flex-wrap w-full">
+    <div class="flex items-center ps-4 border border-gray-200 rounded-lg w-full flex-auto max-w-max group has-[:checked]:border-darkGreen has-[:checked]:focus:ring-darkGreen">
+      <input id="shipping_address-radio-1" type="radio" 
+        name="shipping_address" 
+        value="existing" 
+        checked="checked"
+        class="w-4 h-4 text-lightGreen bg-lightBlue border-lightGreen focus:ring-darkGreen">
+      <label for="shipping_address-radio-1" class="w-full p-4 pl-0 ms-2 text-sm font-medium text-lightBlack">{{ text_address_existing }}</label>
+    </div>
+
+    <div class="flex items-center ps-4 border border-gray-200 rounded-lg w-full flex-auto max-w-max has-[:checked]:border-darkGreen has-[:checked]:focus:ring-darkGreen">
+      <input id="shipping_address-radio-2" type="radio" 
+        name="shipping_address" 
+        value="new"
+        class="w-4 h-4 text-lightGreen bg-lightBlue border-lightGreen focus:ring-darkGreen">
+      <label for="shipping_address-radio-2" class="w-full p-4 pl-0 ms-2 text-sm font-medium text-lightBlack">{{ text_address_new }}</label>
+    </div>
+  </div>
+
+  <div id="shipping-existing" class="py-6">
+    <label for="shipping_address_id" class="block mb-2 text-sm font-medium text-lightBlack">{{ text_shipping_address_existing_label }}</label>
+    <select 
+      id="shipping_address_id"
+      name="address_id"
+      class="form-control bg-lightBlue border border-lightGreen text-lightBlack mb-6 text-sm rounded-lg focus:ring-darkGreen focus:border-darkGreen block w-full p-2.5">
+      {% for address in addresses %}
+        {% if address['address_id'] == address_id %}
+          <option value="{{ address.address_id }}" selected="selected">{{ address.firstname }} {{ address.lastname }}, {{ address.address_1 }}, {{ address.city }}, {{ address.zone }}, {{ address.country }}</option>
+        {% else %}
+          <option value="{{ address.address_id }}">{{ address.firstname }} {{ address.lastname }}, {{ address.address_1 }}, {{ address.city }}, {{ address.zone }}, {{ address.country }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+
+  {% endif %}
+
+
+
+  <div id="shipping-new" style="display: {% if addresses %}none{% else %}block{% endif %};">
+
+    <div class="flex flex-col gap-3">
+      <div class="group form-group">
+        <label for="input-shipping-firstname" class="block mb-2 text-sm font-medium">{{ entry_firstname }}</label>
+        <input type="text" name="firstname" value="" placeholder="{{ entry_firstname }}" id="input-shipping-firstname" required
+          class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+            [&.has-error]:text-red-600 [&.has-error]:border-red-600 peer">
+      </div>
+
+      <div class="group form-group">
+        <label for="input-shipping-lastname" class="block mb-2 text-sm font-medium">{{ entry_lastname }}</label>
+        <input type="text" name="lastname" value="" placeholder="{{ entry_lastname }}" id="input-shipping-lastname" required
+          class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+            [&.has-error]:text-red-600 [&.has-error]:border-red-600 peer">
+      </div>
+      
+      <div class="group form-group">
+        <label for="input-shipping-country" class="block mb-2 text-sm font-medium text-lightBlack">{{ entry_country }}</label>
+        <select name="country_id" id="input-shipping-country" required
+          class="bg-gray-50 border border-lightGreen text-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5 [&.has-error]:text-red-600 [&.has-error]:border-red-600">
+          <option value="">{{ text_select }}</option>
+          {% for country in countries %}
+            {% if country.country_id == country_id %}
+              <option value="{{ country.country_id }}" selected="selected">{{ country.name }}</option>
+            {% else %}
+              <option value="{{ country.country_id }}">{{ country.name }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="group form-group">
+        <label for="input-shipping-zone" class="block mb-2 text-sm font-medium text-lightBlack">{{ entry_zone }}</label>
+        <select name="zone_id" id="input-shipping-zone" required
+          class="bg-gray-50 border border-lightGreen text-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5 [&.has-error]:text-red-600 [&.has-error]:border-red-600"></select>
+      </div>
+
+      <div class="group form-group">
+        <label for="input-shipping-city" class="block mb-2 text-sm font-medium">{{ entry_city }}</label>
+        <input type="text" name="city" value="" placeholder="{{ entry_city }}" id="input-shipping-city" required
+          class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+            [&.has-error]:text-red-600 [&.has-error]:border-red-600 peer">
+      </div>
+
+      <div class="group form-group">
+        <label for="input-shipping-postcode" class="block mb-2 text-sm font-medium">{{ entry_postcode }}</label>
+        <input type="text" name="postcode" value="" placeholder="{{ entry_postcode }}" id="input-shipping-postcode"
+          class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+            [&.has-error]:text-red-600 [&.has-error]:border-red-600 peer">
+      </div>
+
+      <div class="group form-group hidden">
+        <label for="input-shipping-company" class="block mb-2 text-sm font-medium">{{ entry_company }}</label>
+        <input type="text" name="company" value="" placeholder="{{ entry_company }}" id="input-shipping-company"
+          class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+            [&.has-error]:text-red-600 [&.has-error]:border-red-600 peer">
+      </div>
+      <div class="group form-group">
+        <label for="input-shipping-address-1" class="block mb-2 text-sm font-medium">{{ entry_address_1 }}</label>
+        <input type="text" name="address_1" value="" placeholder="{{ entry_address_1 }}" id="input-shipping-address-1" required
+          class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+            [&.has-error]:text-red-600 [&.has-error]:border-red-600 peer">
+      </div>
+      <div class="group form-group hidden">
+        <label for="input-shipping-address-2" class="block mb-2 text-sm font-medium">{{ entry_address_2 }}</label>
+        <input type="text" name="address_2" value="" placeholder="{{ entry_address_2 }}" id="input-shipping-address-2"
+          class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+            [&.has-error]:text-red-600 [&.has-error]:border-red-600 peer">
+      </div>
+
+      {# Верстка кастомных полей под tailwindcss отсутствует #}
+      {% for custom_field in custom_fields %}
+        {% if custom_field.location == 'address' %}
+        
+          {% if custom_field.type == 'select' %}
+            <div id="shipping-custom-field{{ custom_field.custom_field_id }}" class="form-group custom-field" data-sort="{{ custom_field.sort_order }}">
+              <label class="control-label" for="input-shipping-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+              <select name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" id="input-shipping-custom-field{{ custom_field.custom_field_id }}" class="form-control">
+                  <option value="">{{ text_select }}</option>
+                {% for custom_field_value in custom_field.custom_field_value %}
+                  <option value="{{ custom_field_value.custom_field_value_id }}">{{ custom_field_value.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endif %}
+          
+          {% if custom_field.type == 'radio' %}
+            <div id="shipping-custom-field{{ custom_field.custom_field_id }}" class="form-group custom-field" data-sort="{{ custom_field.sort_order }}">
+              <label class="control-label">{{ custom_field.name }}</label>
+              <div id="input-shipping-custom-field{{ custom_field.custom_field_id }}"> {% for custom_field_value in custom_field.custom_field_value %}
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="{{ custom_field_value.custom_field_value_id }}" />
+                    {{ custom_field_value.name }}</label>
+                </div>
+                {% endfor %} </div>
+            </div>
+          {% endif %}
+          
+          {% if custom_field.type == 'checkbox' %}
+            <div id="shipping-custom-field{{ custom_field.custom_field_id }}" class="form-group custom-field" data-sort="{{ custom_field.sort_order }}">
+              <label class="control-label">{{ custom_field.name }}</label>
+              <div id="input-shipping-custom-field{{ custom_field.custom_field_id }}"> {% for custom_field_value in custom_field.custom_field_value %}
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}][]" value="{{ custom_field_value.custom_field_value_id }}" />
+                    {{ custom_field_value.name }}</label>
+                </div>
+                {% endfor %} </div>
+            </div>
+          {% endif %}
+          
+          {% if custom_field.type == 'text' %}
+            <div id="shipping-custom-field{{ custom_field.custom_field_id }}" class="form-group custom-field" data-sort="{{ custom_field.sort_order }}">
+              <label class="control-label" for="input-shipping-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+              <input type="text" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="{{ custom_field.value }}" placeholder="{{ custom_field.name }}" id="input-shipping-custom-field{{ custom_field.custom_field_id }}" class="form-control" />
+            </div>
+          {% endif %}
+          
+          {% if custom_field.type == 'textarea' %}
+            <div id="shipping-custom-field{{ custom_field.custom_field_id }}" class="form-group custom-field" data-sort="{{ custom_field.sort_order }}">
+              <label class="control-label" for="input-shipping-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+              <textarea name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" rows="5" placeholder="{{ custom_field.name }}" id="input-shipping-custom-field{{ custom_field.custom_field_id }}" class="form-control">{{ custom_field.value }}</textarea>
+            </div>
+          {% endif %}
+          
+          {% if custom_field.type == 'file' %}
+            <div id="shipping-custom-field{{ custom_field.custom_field_id }}" class="form-group custom-field" data-sort="{{ custom_field.sort_order }}">
+              <label class="control-label">{{ custom_field.name }}</label>
+              <br />
+              <button type="button" id="button-shipping-custom-field{{ custom_field.custom_field_id }}" data-loading-text="{{ text_loading }}" class="btn btn-default"><i class="fa fa-upload"></i> {{ button_upload }}</button>
+              <input type="hidden" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="" id="input-shipping-custom-field{{ custom_field.custom_field_id }}" />
+            </div>
+          {% endif %}
+          
+          {% if custom_field.type == 'date' %}
+            <div id="shipping-custom-field{{ custom_field.custom_field_id }}" class="form-group custom-field" data-sort="{{ custom_field.sort_order }}">
+              <label class="control-label" for="input-shipping-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+              <div class="input-group date">
+                <input type="text" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="{{ custom_field.value }}" placeholder="{{ custom_field.name }}" data-date-format="YYYY-MM-DD" id="input-shipping-custom-field{{ custom_field.custom_field_id }}" class="form-control" />
+                <span class="input-group-btn">
+                <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                </span></div>
+            </div>
+          {% endif %}
+          
+          {% if custom_field.type == 'time' %}
+            <div id="shipping-custom-field{{ custom_field.custom_field_id }}" class="form-group custom-field" data-sort="{{ custom_field.sort_order }}">
+              <label class="control-label" for="input-shipping-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+              <div class="input-group time">
+                <input type="text" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="{{ custom_field.value }}" placeholder="{{ custom_field.name }}" data-date-format="HH:mm" id="input-shipping-custom-field{{ custom_field.custom_field_id }}" class="form-control" />
+                <span class="input-group-btn">
+                <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                </span></div>
+            </div>
+          {% endif %}
+          
+          {% if custom_field.type == 'datetime' %}
+            <div id="shipping-custom-field{{ custom_field.custom_field_id }}" class="form-group custom-field" data-sort="{{ custom_field.sort_order }}">
+              <label class="control-label" for="input-shipping-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+              <div class="input-group datetime">
+                <input type="text" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="{{ custom_field.value }}" placeholder="{{ custom_field.name }}" data-date-format="YYYY-MM-DD HH:mm" id="input-payment-custom-field{{ custom_field.custom_field_id }}" class="form-control" />
+                <span class="input-group-btn">
+                <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                </span></div>
+            </div>
+          {% endif %}
+        
+        {% endif %}
+      {% endfor %}
+
+    </div>
+  </div>
+
+  <div id="button-shipping-address-action" class="flex flex-col flex-1 gap-3 items-end justify-between">
+    <input type="button" 
+      id="button-shipping-address"
+      value="{{ button_continue }}"
+      class="w-full text-white bg-gradient-to-r from-lightGreen to-darkGreen focus:ring-4 focus:bg-darkGreen font-medium rounded-md text-base p-3 xl-notebook:p-5 focus:outline-none cursor-pointer" />
+  </div>
+</form>
+<script type="text/javascript"><!--
+$('input[name=\'shipping_address\']').on('change', function() {
+	if (this.value == 'new') {
+		$('#shipping-existing').hide();
+		$('#shipping-new').show();
+	} else {
+		$('#shipping-existing').show();
+		$('#shipping-new').hide();
+	}
+});
+//--></script>
+<script type="text/javascript"><!--
+$('#collapse-shipping-address .form-group[data-sort]').detach().each(function() {
+	if ($(this).attr('data-sort') >= 0 && $(this).attr('data-sort') <= $('#collapse-shipping-address .form-group').length-2) {
+		$('#collapse-shipping-address .form-group').eq(parseInt($(this).attr('data-sort'))+2).before(this);
+	}
+
+	if ($(this).attr('data-sort') > $('#collapse-shipping-address .form-group').length-2) {
+		$('#collapse-shipping-address .form-group:last').after(this);
+	}
+
+	if ($(this).attr('data-sort') == $('#collapse-shipping-address .form-group').length-2) {
+		$('#collapse-shipping-address .form-group:last').after(this);
+	}
+
+	if ($(this).attr('data-sort') < -$('#collapse-shipping-address .form-group').length-2) {
+		$('#collapse-shipping-address .form-group:first').before(this);
+	}
+});
+//--></script>
+<script type="text/javascript"><!--
+$('#collapse-shipping-address button[id^=\'button-shipping-custom-field\']').on('click', function() {
+	var element = this;
+
+	$('#form-upload').remove();
+
+	$('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;"><input type="file" name="file" /></form>');
+
+	$('#form-upload input[name=\'file\']').trigger('click');
+
+	if (typeof timer != 'undefined') {
+    	clearInterval(timer);
+	}
+
+	timer = setInterval(function() {
+		if ($('#form-upload input[name=\'file\']').val() != '') {
+			clearInterval(timer);
+
+			$.ajax({
+				url: 'index.php?route=tool/upload',
+				type: 'post',
+				dataType: 'json',
+				data: new FormData($('#form-upload')[0]),
+				cache: false,
+				contentType: false,
+				processData: false,
+				success: function(json) {
+					$(element).parent().find('.text-danger').remove();
+
+					if (json['error']) {
+						$(element).parent().find('input[name^=\'custom_field\']').after('<div class="text-danger">' + json['error'] + '</div>');
+					}
+
+					if (json['success']) {
+						alert(json['success']);
+
+						$(element).parent().find('input[name^=\'custom_field\']').val(json['code']);
+					}
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+				}
+			});
+		}
+	}, 500);
+});
+//--></script>
+<script type="text/javascript"><!--
+$('.date').datetimepicker({
+	language: '{{ datepicker }}',
+	pickTime: false
+});
+
+$('.time').datetimepicker({
+	language: '{{ datepicker }}',
+	pickDate: false
+});
+
+$('.datetime').datetimepicker({
+	language: '{{ datepicker }}',
+	pickDate: true,
+	pickTime: true
+});
+//--></script>
+<script type="text/javascript"><!--
+$('#collapse-shipping-address select[name=\'country_id\']').on('change', function() {
+	$.ajax({
+		url: 'index.php?route=checkout/checkout/country&country_id=' + this.value,
+		dataType: 'json',
+		beforeSend: function() {
+			$('#collapse-shipping-address select[name=\'country_id\']').prop('disabled', true);
+		},
+		complete: function() {
+			$('#collapse-shipping-address select[name=\'country_id\']').prop('disabled', false);
+		},
+		success: function(json) {
+			if (json['postcode_required'] == '1') {
+				$('#collapse-shipping-address input[name=\'postcode\']').parent().parent().addClass('required');
+			} else {
+				$('#collapse-shipping-address input[name=\'postcode\']').parent().parent().removeClass('required');
+			}
+
+			html = '<option value="">{{ text_select }}</option>';
+
+			if (json['zone'] && json['zone'] != '') {
+				for (i = 0; i < json['zone'].length; i++) {
+					html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+
+					if (json['zone'][i]['zone_id'] == '{{ zone_id }}') {
+						html += ' selected="selected"';
+					}
+
+					html += '>' + json['zone'][i]['name'] + '</option>';
+				}
+			} else {
+				html += '<option value="0" selected="selected">{{ text_none }}</option>';
+			}
+
+			$('#collapse-shipping-address select[name=\'zone_id\']').html(html);
+		},
+		error: function(xhr, ajaxOptions, thrownError) {
+			alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+		}
+	});
+});
+
+$('#collapse-shipping-address select[name=\'country_id\']').trigger('change');
+//--></script>

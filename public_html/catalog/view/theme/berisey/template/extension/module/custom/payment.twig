@@ -1,0 +1,55 @@
+<h4 class="block text-lightBlack text-base font-bold sm-mobile:text-xl pb-6 last:pb-0">
+    <span class="line-clamp-2">{{heading_payment}}</span>
+</h4>
+
+{% if (error_warning) %} 
+  <script>
+    iziToast.warning({
+      message: '{{ error_warning }}',
+      target: '#custom-payment .alert-target',
+      targetFirst: false,
+    });
+  </script>
+{% endif %}
+
+<div class="alert-target"></div>
+<div class="flex flex-col flex-1">
+  {% if (payment_methods) %} 
+    <div class="flex gap-3 flex-wrap">
+    {% for payment_method in payment_methods %} 
+      {% set code = payment_method['code'] %} 
+
+      <div class="flex items-center ps-4 border border-gray-200 rounded-lg w-full flex-auto max-w-max has-[:checked]:border-darkGreen has-[:checked]:focus:ring-darkGreen">
+        <input id="payment_method_{{code}}" type="radio" 
+          name="payment_method" 
+          value="{{ payment_method['code'] }}"
+          {% if (payment_method['code'] == code or not code) %} checked="checked" {% endif %}
+          class="w-4 h-4 text-lightGreen bg-lightBlue border-lightGreen focus:ring-darkGreen">
+        <label for="payment_method_{{code}}" class="w-full p-4 pl-0 ms-2 text-sm font-medium text-lightBlack">
+          {{ payment_method['title'] }} 
+        </label>
+          {% if (payment_method['terms']) %} 
+            ({{ payment_method['terms'] }})
+          {% endif %} 
+          {% if (payment_method['description'] is defined) %} 
+            <br /><small>{{ payment_method['description'] }}</small>
+          {% endif %}  
+      </div>
+    {% endfor %} 
+  </div>
+  {% endif %} 
+
+  <script>
+        $(function(){
+
+            let customer_group_id = {{ customer_group_id }};
+
+            if ( $('#custom-customer input[name=\'customer_group_id\']:checked').val() !== undefined ) {
+                customer_group_id = $('#custom-customer input[name=\'customer_group_id\']:checked').val();
+            }
+
+            custom_block.payment( customer_group_id );
+            
+        });
+    </script>
+</div>

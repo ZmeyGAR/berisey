@@ -1,0 +1,367 @@
+{% if (error_warning) %} 
+  <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}</div>
+{% endif %} 
+
+<div class="flex flex-1 flex-wrap gap-3 h-full md:flex-nowrap">
+
+    {% if (shipping_methods) %} 
+
+      <div id="custom-shipping-methods" class="p-4 rounded-lg bg-lightBlue h-max md:h-full min-w-80 w-full md:max-w-80">
+        <div class="flex-1 md:max-w-80 flex flex-col h-full">
+          <h4 class="block text-lightBlack text-base font-bold sm-mobile:text-xl pb-6 last:pb-0">
+              <span class="line-clamp-2">{{heading_shipping_method}}</span>
+          </h4>
+
+          {% for shipping_method in shipping_methods %} 
+            <p><strong>{{ shipping_method['title'] }}</strong></p>
+
+            {% if (not shipping_method['error']) %} 
+                <div class="flex gap-3 flex-wrap">
+                  {% for quote in shipping_method['quote'] %} 
+                  {% set code = quote['code'] %}
+
+                  <div class="flex items-center ps-4 border border-gray-200 rounded-lg w-full flex-auto max-w-max has-[:checked]:border-darkGreen has-[:checked]:focus:ring-darkGreen">
+                    <input id="shipping_method_{{code}}" type="radio" 
+                      name="shipping_method" 
+                      value="{{ quote['code'] }}" 
+                      {% if (quote['code'] == code or not code) %} checked="checked" {% endif %}
+                      class="w-4 h-4 text-lightGreen bg-lightBlue border-lightGreen focus:ring-darkGreen">
+                    <label for="shipping_method_{{code}}" class="w-full p-4 pl-0 ms-2 text-xs font-medium text-lightBlack">
+                      {{ quote['title'] }} - {% if quote['cost'] > 0 %} {{ quote['text'] }} {% else %} {{ text_free }} {% endif %}
+                    </label>
+                    {% if (quote['description'] is defined) %} 
+                      <br /><small>{{ quote['description'] }}</small>
+                    {% endif %} 
+                  </div>
+
+                {% endfor %} 
+              </div>
+            {% else %} 
+              <div class="alert alert-danger">{{ shipping_method['error'] }}</div>
+            {% endif %} 
+          {% endfor %} 
+        </div>
+
+      </div>
+
+      <div id="custom-shipping-address" class="p-4 rounded-lg bg-lightBlue flex flex-col h-max md:h-full max-w-full w-full">      
+        <h4 class="block text-lightBlack text-base font-bold sm-mobile:text-xl pb-6 last:pb-0">
+            <span class="line-clamp-2">{{heading_shipping_address}}</span>
+        </h4>
+
+        <div class="alert-target"></div>
+        <div class="flex flex-wrap">
+          {% if (addresses) %} 
+
+            <div class="flex gap-3 flex-wrap w-full">
+              <div class="flex items-center ps-4 border border-gray-200 rounded-lg w-full flex-auto max-w-max group has-[:checked]:border-darkGreen has-[:checked]:focus:ring-darkGreen">
+                <input id="shipping_address-radio-1" type="radio" 
+                  name="shipping_address" 
+                  value="existing" 
+                  checked="checked"
+                  class="w-4 h-4 text-lightGreen bg-lightBlue border-lightGreen focus:ring-darkGreen">
+                <label for="shipping_address-radio-1" class="w-full p-4 pl-0 ms-2 text-sm font-medium text-lightBlack">{{ text_address_existing }}</label>
+              </div>
+
+              <div class="flex items-center ps-4 border border-gray-200 rounded-lg w-full flex-auto max-w-max has-[:checked]:border-darkGreen has-[:checked]:focus:ring-darkGreen">
+                <input id="shipping_address-radio-2" type="radio" 
+                  name="shipping_address" 
+                  value="new"
+                  class="w-4 h-4 text-lightGreen bg-lightBlue border-lightGreen focus:ring-darkGreen">
+                <label for="shipping_address-radio-2" class="w-full p-4 pl-0 ms-2 text-sm font-medium text-lightBlack">{{ text_address_new }}</label>
+              </div>
+            </div>
+
+            <div id="shipping-existing" class="py-6">
+              <label for="shipping_address_id" class="block mb-2 text-sm font-medium text-lightBlack">{{ text_shipping_address_existing_label }}</label>
+              <select 
+                id="shipping_address_id"
+                name="address_id"
+                class="form-control bg-lightBlue border border-lightGreen text-lightBlack mb-6 text-sm rounded-lg focus:ring-darkGreen focus:border-darkGreen block w-full p-2.5">
+                {% for address in addresses %}
+                  {% if address['address_id'] == address_id %}
+                    <option value="{{ address.address_id }}" selected="selected">{{ address.firstname }} {{ address.lastname }}, {{ address.address_1 }}, {{ address.city }}, {{ address.zone }}, {{ address.country }}</option>
+                  {% else %}
+                    <option value="{{ address.address_id }}">{{ address.firstname }} {{ address.lastname }}, {{ address.address_1 }}, {{ address.city }}, {{ address.zone }}, {{ address.country }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+
+          {% endif %} 
+        </div>
+
+        
+        
+        <div id="shipping-new" style="display: {{ addresses ? 'none' : 'flex' }};" class="gap-x-3 flex-wrap *:xl-mobile:max-w-[calc(50%-0.75rem)] *:sm-notebook:max-w-full *:xl:max-w-[calc(50%-0.75rem)] *:w-full">
+
+          {% for field in setting['fields'] %} 
+
+            {% if (field['name'] == 'company') %} 
+              <div class="group form-group" id="shipping-field-company">
+                <label for="input-shipping-company" class="block mb-2 text-sm font-medium">{{ entry_company }}</label>
+                <input type="text" name="company" value="{{company}}" placeholder="{{ entry_company }}" id="input-shipping-company"
+                  class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+                    group-has-[.text-danger]:text-red-600 group-has-[.text-danger]:border-red-600 peer">
+              </div>
+            {% endif %} 
+
+            {% if (field['name'] == 'address_1') %} 
+              <div class="group form-group" id="shipping-field-address-1">
+                <label for="input-shipping-address_1" class="block mb-2 text-sm font-medium">{{ entry_address_1 }}</label>
+                <input type="text" name="address_1" value="{{address_1}}" placeholder="{{ entry_address_1 }}" id="input-shipping-address-1"
+                  class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+                    group-has-[.text-danger]:text-red-600 group-has-[.text-danger]:border-red-600 peer">
+              </div>
+            {% endif %} 
+
+            {% if (field['name'] == 'address_2') %} 
+              <div class="group form-group" id="shipping-field-address-2">
+                <label for="input-shipping-address_2" class="block mb-2 text-sm font-medium">{{ entry_address_2 }}</label>
+                <input type="text" name="address_2" value="{{address_2}}" placeholder="{{ entry_address_2 }}" id="input-shipping-address-2"
+                  class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+                    group-has-[.text-danger]:text-red-600 group-has-[.text-danger]:border-red-600 peer">
+              </div>
+            {% endif %} 
+
+            {% if (field['name'] == 'city') %} 
+              <div class="group form-group" id="shipping-field-city">
+                <label for="input-shipping-city" class="block mb-2 text-sm font-medium">{{ entry_city }}</label>
+                <input type="text" name="city" value="{{city}}" placeholder="{{ entry_city }}" id="input-shipping-city"
+                  class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+                    group-has-[.text-danger]:text-red-600 group-has-[.text-danger]:border-red-600 peer">
+              </div>
+            {% endif %} 
+
+            {% if (field['name'] == 'postcode') %} 
+              <div class="group form-group" id="shipping-field-postcode">
+                <label for="input-shipping-postcode" class="block mb-2 text-sm font-medium">{{ entry_postcode }}</label>
+                <input type="text" name="postcode" value="{{postcode}}" placeholder="{{ entry_postcode }}" id="input-shipping-postcode"
+                  class="bg-white border border-lightGreen text-lightBlack placeholder-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5
+                    group-has-[.text-danger]:text-red-600 group-has-[.text-danger]:border-red-600 peer">
+              </div>
+            {% endif %} 
+
+            {% if (field['name'] == 'country_id') %} 
+              <div class="group form-group" id="input-shipping-country">
+                <label for="input-shipping-country-id" class="block mb-2 text-sm font-medium text-lightBlack">{{ entry_country }}</label>
+                <select name="country_id" id="input-shipping-country-id"
+                  class="form-control bg-lightBlue border border-lightGreen text-lightBlack text-sm rounded-lg focus:ring-darkGreen focus:border-darkGreen block w-full p-2.5">
+                  <option value="">{{ text_select }}</option>
+                    {% for country in countries %} 
+                      {% if (country['country_id'] == country_id) %} 
+                        <option value="{{ country['country_id'] }}" selected="selected">{{ country['name'] }}</option>
+                      {% else %} 
+                        <option value="{{ country['country_id'] }}">{{ country['name'] }}</option>
+                      {% endif %} 
+                    {% endfor %} 
+                </select>
+              </div>
+            {% endif %} 
+
+            {% if (field['name'] == 'zone_id') %} 
+              <div class="group form-group" id="input-shipping-zone">
+                <label for="input-shipping-zone-id" class="block mb-2 text-sm font-medium text-lightBlack">{{ entry_zone }}</label>
+                <select name="zone_id" id="input-shipping-zone-id"
+                  class="bg-gray-50 border border-lightGreen text-lightBlack text-sm rounded-lg focus:ring-lightGreen focus:border-darkGreen block w-full p-2.5 group-has-[.text-danger]:text-red-600 group-has-[.text-danger]:border-red-600"></select>
+              </div>
+
+            {% endif %} 
+
+            {% if (field['name']|slice(0, 12) == 'custom_field') %} 
+
+              {% set custom_field_id = field.name|slice(12) %} 
+
+              {% for custom_field in custom_fields %} 
+              {% if (custom_field['custom_field_id'] == custom_field_id) %} 
+
+                {% if (custom_field['type'] == 'select') %} 
+                <div id="shipping-field-custom-field{{ custom_field['custom_field_id'] }}" class="form-group{{ custom_field['required'] ? ' required' : '' }} custom-field" data-sort="{{ custom_field['sort_order'] }}">
+                  <label class="control-label" for="input-shipping-custom-field{{ custom_field['custom_field_id'] }}">{{ custom_field['name'] }}</label>
+                  <select name="custom_field{{ custom_field['custom_field_id'] }}" id="input-shipping-custom-field{{ custom_field['custom_field_id'] }}" class="form-control">
+                    <option value="">{{ text_select }}</option>
+                    {% for custom_field_value in custom_field['custom_field_value'] %} 
+                    <option value="{{ custom_field_value['custom_field_value_id'] }}">{{ custom_field_value['name'] }}</option>
+                    {% endfor %} 
+                  </select>
+                </div>
+                {% endif %} 
+
+                {% if (custom_field['type'] == 'radio') %} 
+                <div id="shipping-field-custom-field{{ custom_field['custom_field_id'] }}" class="form-group{{ custom_field['required'] ? ' required' : '' }} custom-field" data-sort="{{ custom_field['sort_order'] }}">
+                  <label class="col-sm-2 control-label">{{ custom_field['name'] }}</label>
+                    <div id="input-shipping-custom-field{{ custom_field['custom_field_id'] }}">
+                    {% for custom_field_value in custom_field['custom_field_value'] %} 
+                    <div class="radio">
+                      <label>
+                        <input type="radio" name="custom_field{{ custom_field['custom_field_id'] }}" value="{{ custom_field_value['custom_field_value_id'] }}" />
+                        {{ custom_field_value['name'] }}</label>
+                    </div>
+                    {% endfor %} 
+                  </div>
+                </div>
+                {% endif %} 
+
+                {% if (custom_field['type'] == 'checkbox') %} 
+                <div id="shipping-field-custom-field{{ custom_field['custom_field_id'] }}" class="form-group{{ custom_field['required'] ? ' required' : '' }} custom-field" data-sort="{{ custom_field['sort_order'] }}">
+                  <label class="control-label">{{ custom_field['name'] }}</label>
+                    <div id="input-shipping-custom-field{{ custom_field['custom_field_id'] }}">
+                    {% for custom_field_value in custom_field['custom_field_value'] %} 
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="custom_field[{{ custom_field['custom_field_id'] }}][]" value="{{ custom_field_value['custom_field_value_id'] }}" />
+                        {{ custom_field_value['name'] }}</label>
+                    </div>
+                    {% endfor %} 
+                  </div>
+                </div>
+                {% endif %} 
+
+                {% if (custom_field['type'] == 'text') %} 
+                <div id="shipping-field-custom-field{{ custom_field['custom_field_id'] }}" class="form-group{{ custom_field['required'] ? ' required' : '' }} custom-field" data-sort="{{ custom_field['sort_order'] }}">
+                  <label class="control-label" for="input-shipping-custom-field{{ custom_field['custom_field_id'] }}">{{ custom_field['name'] }}</label>
+                  <input type="text" name="custom_field{{ custom_field['custom_field_id'] }}" value="{{ custom_field['value'] }}" placeholder="{{ custom_field['name'] }}" id="input-shipping-custom-field{{ custom_field['custom_field_id'] }}" class="form-control" />
+                </div>
+                {% endif %} 
+
+                {% if (custom_field['type'] == 'textarea') %} 
+                <div id="shipping-field-custom-field{{ custom_field['custom_field_id'] }}" class="form-group{{ custom_field['required'] ? ' required' : '' }} custom-field" data-sort="{{ custom_field['sort_order'] }}">
+                  <label class="control-label" for="input-shipping-custom-field{{ custom_field['custom_field_id'] }}">{{ custom_field['name'] }}</label>
+                  <textarea name="custom_field{{ custom_field['custom_field_id'] }}" rows="5" placeholder="{{ custom_field['name'] }}" id="input-shipping-custom-field{{ custom_field['custom_field_id'] }}" class="form-control">{{ custom_field['value'] }}</textarea>
+                </div>
+                {% endif %} 
+
+                {% if (custom_field['type'] == 'file') %} 
+                <div id="shipping-field-custom-field{{ custom_field['custom_field_id'] }}" class="form-group{{ custom_field['required'] ? ' required' : '' }} custom-field" data-sort="{{ custom_field['sort_order'] }}">
+                  <label class="control-label">{{ custom_field['name'] }}</label>
+                  <button type="button" id="button-shipping-custom-field{{ custom_field['custom_field_id'] }}" data-loading-text="{{ text_loading }}" class="btn btn-default"><i class="fa fa-upload"></i> {{ button_upload }}</button>
+                  <input type="hidden" name="custom_field{{ custom_field['custom_field_id'] }}" value="" id="input-shipping-custom-field{{ custom_field['custom_field_id'] }}" />
+                </div>
+                {% endif %} 
+
+                {% if (custom_field['type'] == 'date') %} 
+                <div id="shipping-field-custom-field{{ custom_field['custom_field_id'] }}" class="form-group{{ custom_field['required'] ? ' required' : '' }} custom-field" data-sort="{{ custom_field['sort_order'] }}">
+                  <label class="control-label" for="input-shipping-custom-field{{ custom_field['custom_field_id'] }}">{{ custom_field['name'] }}</label>
+                  <div class="input-group date">
+                    <input type="text" name="custom_field{{ custom_field['custom_field_id'] }}" value="{{ custom_field['value'] }}" placeholder="{{ custom_field['name'] }}" data-date-format="YYYY-MM-DD" id="input-shipping-custom-field{{ custom_field['custom_field_id'] }}" class="form-control" />
+                    <span class="input-group-btn">
+                    <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                    </span></div>
+                </div>
+                {% endif %} 
+
+                {% if (custom_field['type'] == 'time') %} 
+                <div id="shipping-field-custom-field{{ custom_field['custom_field_id'] }}" class="form-group{{ custom_field['required'] ? ' required' : '' }} custom-field" data-sort="{{ custom_field['sort_order'] }}">
+                  <label class="control-label" for="input-shipping-custom-field{{ custom_field['custom_field_id'] }}">{{ custom_field['name'] }}</label>
+                  <div class="input-group time">
+                    <input type="text" name="custom_field{{ custom_field['custom_field_id'] }}" value="{{ custom_field['value'] }}" placeholder="{{ custom_field['name'] }}" data-date-format="HH:mm" id="input-shipping-custom-field{{ custom_field['custom_field_id'] }}" class="form-control" />
+                    <span class="input-group-btn">
+                    <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                    </span></div>
+                </div>
+                {% endif %} 
+
+                {% if (custom_field['type'] == 'datetime') %} 
+                <div id="shipping-field-custom-field{{ custom_field['custom_field_id'] }}" class="form-group{{ custom_field['required'] ? ' required' : '' }} custom-field" data-sort="{{ custom_field['sort_order'] }}">
+                  <label class="control-label" for="input-shipping-custom-field{{ custom_field['custom_field_id'] }}">{{ custom_field['name'] }}</label>
+                  <div class="input-group datetime">
+                    <input type="text" name="custom_field{{ custom_field['custom_field_id'] }}" value="{{ custom_field['value'] }}" placeholder="{{ custom_field['name'] }}" data-date-format="YYYY-MM-DD HH:mm" id="input-shipping-custom-field{{ custom_field['custom_field_id'] }}" class="form-control" />
+                    <span class="input-group-btn">
+                    <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                      </span></div>
+                </div>
+                {% endif %} 
+
+              {% endif %}   
+              {% endfor %} 
+
+            {% endif %} 
+          {% endfor %}   
+        </div>
+      </div>
+
+    {% endif %} 
+
+</div>
+
+<script><!--
+$('#custom-shipping [name^=shipping]').on('input', function() {
+  $(this).parent().find('.text-danger').remove();
+  $(this).parent().removeClass('has-error');
+});
+//--></script>
+
+<script><!--
+$('#custom-shipping input[name=\'shipping_address\']').on('change', function() {
+  if ( $(this).val() === 'new' ){
+    $('#shipping-new').show();
+  } else {
+    $('#shipping-new').hide();
+  }
+  if ( $(this).val() === 'existing' ){
+    $('#shipping-existing').show();
+  } else {
+    $('#shipping-existing').hide();
+  }
+
+});
+//--></script>
+
+<script><!--
+$('#custom-shipping input[name=\'shipping_method\']').on('change', function() {
+
+  $('.alert, .text-danger').remove();
+  $('.has-error').removeClass('has-error');
+
+  // Custom (inbox)
+  custom_block.shipping(this.value);
+
+});
+
+$('#custom-shipping input[name=\'shipping_method\']:checked').trigger('change');
+//--></script>
+
+<script><!--
+$('#custom-shipping select[name=\'country_id\']').on('change', function() {
+  $.ajax({
+    url: 'index.php?route=checkout/checkout/country&country_id=' + this.value,
+    dataType: 'json',
+    beforeSend: function() {
+      $('#custom-shipping select[name=\'country_id\']').after(' <i class="fa fa-circle-o-notch fa-spin"></i>');
+    },
+    complete: function() {
+      $('.fa-spin').remove();
+    },
+    success: function(json) {
+      if (json['postcode_required'] == '1') {
+        $('#custom-shipping input[name=\'postcode\']').parent().parent().addClass('required');
+      } else {
+        $('#custom-shipping input[name=\'postcode\']').parent().parent().removeClass('required');
+      }
+
+      html = '<option value="">{{ text_select }}</option>';
+
+      if (json['zone'] && json['zone'] != '') {
+        for (i = 0; i < json['zone'].length; i++) {
+          html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+
+          if (json['zone'][i]['zone_id'] == '{{ zone_id }}') {
+            html += ' selected="selected"';
+          }
+
+          html += '>' + json['zone'][i]['name'] + '</option>';
+        }
+      } else {
+        html += '<option value="0" selected="selected">{{ text_none }}</option>';
+      }
+
+      $('#custom-shipping select[name=\'zone_id\']').html(html);
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+    }
+  });
+});
+
+$('#custom-shipping select[name=\'country_id\']').trigger('change');
+//--></script>

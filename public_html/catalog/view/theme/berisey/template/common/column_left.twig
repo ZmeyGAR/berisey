@@ -1,0 +1,5 @@
+{% if modules %}
+  <section id="column-left" class="w-full py-10">
+    <div class="px-3 pb-12 xl-mobile:px-6">{% for module in modules %}{{ module }}{% endfor %}</div>
+  </section>
+{% endif %}

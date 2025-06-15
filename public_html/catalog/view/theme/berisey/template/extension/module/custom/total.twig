@@ -1,0 +1,16 @@
+<div class="space-y-6">
+	<h4 class="text-xl font-semibold text-lightBlack">{{heading_total}}</h4>
+
+	<div class="space-y-4">
+		<div class="space-y-2">
+			{% for total in totals %} 
+				<dl class="group flex items-center justify-between gap-4 last:border-t last:border-lightGray/50 last:pt-2">
+					<dt class="text-lightBlack group-last:font-bold group-last:text-lg">{{ total.title }}:</dt>
+					<dd class="text-base font-medium text-lightBlack group-last:font-bold group-last:text-lg">{{ total.text }}</dd>
+				</dl>
+			{% endfor %} 
+		</div>
+
+	</div>
+
+</div>

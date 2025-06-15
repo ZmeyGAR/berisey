@@ -1,0 +1,79 @@
+2025-04-13 18:49:35 - MOD: Modification Default
+
+FILE: system/engine/action.php
+REGEX: ~(require|include)(_once)?\(([^)]+)~
+LINE: 69
+
+FILE: system/engine/loader.php
+REGEX: ~(require|include)(_once)?\(([^)]+)~
+LINE: 77
+LINE: 151
+LINE: 168
+
+FILE: system/library/config.php
+REGEX: ~(require|include)(_once)?\(([^)]+)~
+LINE: 59
+
+FILE: system/library/language.php
+REGEX: ~(require|include)(_once)?\(([^)]+)~
+LINE: 67
+LINE: 73
+
+FILE: system/library/template/template.php
+REGEX: ~(require|include)(_once)?\(([^)]+)~
+LINE: 18
+
+FILE: system/library/template/twig.php
+CODE: if (is_file($file)) {
+LINE: 13
+----------------------------------------------------------------
+MOD: DebugBar
+
+FILE: system/library/db/mysqli.php
+CODE: class MySQLi {
+LINE: 6
+CODE: $query = $this->connection->query($sql);
+LINE: 25
+CODE: $query = $this->connection->query($sql);
+LINE: 28
+
+FILE: system/library/log.php
+CODE: class Log {
+LINE: 16
+CODE: public function write($message) {
+LINE: 36
+CODE: namespace Template;
+LINE: 5
+CODE: $file =
+LINE: 17
+CODE: namespace Template;
+LINE: 5
+CODE: $file =
+LINE: 18
+CODE: <?php
+LINE: 3
+CODE: $result = $this->registry->get('event')->trigger('view/' . $trigger . '/after', array(&$route, &$data, &$output));
+LINE: 143
+----------------------------------------------------------------
+MOD: DEV-OPENCART.COM — Простое оформление заказа
+
+FILE: catalog/controller/checkout/checkout.php
+CODE: public function index() {
+LINE: 8
+
+FILE: catalog/controller/checkout/cart.php
+CODE: public function index() {
+LINE: 8
+
+FILE: admin/controller/common/column_left.php
+CODE: if ($this->user->hasPermission('access', 'marketplace/extension')) {
+LINE: 194
+
+FILE: admin/language/ru-ru/common/column_left.php
+CODE: $_['text_modification']
+LINE: 51
+
+FILE: admin/language/en-gb/common/column_left.php
+CODE: $_['text_modification']
+LINE: 40
+----------------------------------------------------------------
